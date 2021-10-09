@@ -5,7 +5,20 @@ const timer = {
     longBreakInterval: 4,
 };
 
+document.addEventListener('DOMContentLoaded', () => {
+    switchMode('pomodoro');  // makes sure timer's default mode is pomodoro and timer.remainingTime has appropriate content
+    // If this code is not present, invoking startTimer() will crash the program because timer.remainingTime will not exist
+})
+
 let interval;  // yes, let it
+
+const mainButton = document.getElementById('js-btn');
+mainButton.addEventListener('click', () => {
+    const { action } = mainButton.dataset;
+    if (action = 'start') {
+        startTimer();  // Makes a one-time-use handle function to call startTimer (ooh, functional programming!)
+    }
+})
 
 const modeButtons = document.querySelector('#js-mode-buttons');  // make an object to identify the buttons in index.html
 modeButtons.addEventListener('click', handleMode);  // add an event listener to handle a click on any mode button
@@ -28,19 +41,24 @@ function getRemainingTime(endTime) {
 function startTimer() {
     let { total } = timer.remainingTime;
     const endTime = Date.parse(new Date() + total * 1000);  // current moment in milliseconds + timer total
+
+    // change the appearaance of the start button once the timer has been started
+    mainButton.dataset.action = 'stop';  // change action to stop on click. This way we can't keep starting the timer forever
+    mainButton.textContent = 'stop';  // change text of button
+    mainButton.classList.add('active');  // add 'active' to mainButton's class list
     
     interval = setInterval(function() {  // functional programming?
         timer.remainingTime = getRemainingTime(endTime);
-        updateClock();
+        updateClock();  // update view after timer state has changed
 
         total = timer.remainingTime.total;
         if (total <= 0) {
-            clearInterval(interval);
+            clearInterval(interval);  // check if we have reached zero, terminates countdown if so
         }
     }, 1000);
 }
 
-function updateClock() {
+function updateClock() {  // updates view
     const { remainingTime } = timer;
     const minutes = `${remainingTime.minutes}`.padStart(2, '0');  // width of 2, pad empty charas with 0's
     const seconds = `${remainingTime.seconds}`.padStart(2, '0');
