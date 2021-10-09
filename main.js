@@ -5,8 +5,40 @@ const timer = {
     longBreakInterval: 4,
 };
 
+let interval;  // yes, let it
+
 const modeButtons = document.querySelector('#js-mode-buttons');  // make an object to identify the buttons in index.html
 modeButtons.addEventListener('click', handleMode);  // add an event listener to handle a click on any mode button
+
+function getRemainingTime(endTime) {
+    const currentTime = Date.parse(new Date);
+    const difference = endTime - currentTime;
+
+    const total = Number.parseInt(difference / 1000, 10);  // total time in seconds remaining (milliseconds -> seconds) convert to int
+    const minutes = Number.parseInt((total / 60) % 60, 10);  // whole minutes remaining
+    const seconds = Number.parseInt(total % 60, 10);  // seconds remaining aafter calculaating whole minutes
+
+    return {
+        total,
+        minutes,
+        seconds,
+    };
+}
+
+function startTimer() {
+    let { total } = timer.remainingTime;
+    const endTime = Date.parse(new Date() + total * 1000);  // current moment in milliseconds + timer total
+    
+    interval = setInterval(function() {  // functional programming?
+        timer.remainingTime = getRemainingTime(endTime);
+        updateClock();
+
+        total = timer.remainingTime.total;
+        if (total <= 0) {
+            clearInterval(interval);
+        }
+    }, 1000);
+}
 
 function updateClock() {
     const { remainingTime } = timer;
