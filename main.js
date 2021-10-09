@@ -5,7 +5,6 @@ const timer = {
     longBreakInterval: 4,
 };
 
-
 const modeButtons = document.querySelector('#js-mode-buttons');  // make an object to identify the buttons in index.html
 modeButtons.addEventListener('click', handleMode);  // add an event listener to handle a click on any mode button
 
